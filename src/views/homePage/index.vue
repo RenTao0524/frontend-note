@@ -1,46 +1,73 @@
 <template>
   <section class="homePage">
     <nav class="homePage-nav">
-      <router-link v-for="item in navOptions" :key="item.name" :to="item.path" active-class="activeClass">
-        {{item.name}}
+      <router-link v-for="item in navOptions" :key="item" :class="{ activeClass: item === pageIndex}"
+        :to="{ name: 'homePage', params: { pageIndex: item }}">
+        {{item}}
       </router-link>
+      <span>{{date}}</span>
     </nav>
-    <router-view class="homePage-main"/>
+    <section class="homePage-main">
+      <side-bar :options="sideBarOptions[pageIndex]" :show="show"/>
+      <section class="homePage-main-view">
+        <header>
+          <button @click="show = !show">close</button>
+          <span>当前所在位置：</span>
+        </header>
+        <section class="homePage-main-view-body">
+          <cmp-body/>
+          <cmp-paging :currentPage="currentPage" :pageSize="pageSize" :pageRange="[10, 20, 30, 40, 50]"/>
+        </section>
+      </section>
+    </section>
   </section>
 </template>
 
 <script>
+import SideBar from '@/components/SideBar'
+import cmpBody from '@/components/cmpBody'
+import cmpPaging from '@/components/cmpPaging'
+import { getDate } from '@/utils/getDate'
+import { sideBarOptions } from '@/utils/sideBarOptions'
+import { mapState } from 'vuex'
 export default {
   name: 'homePage',
+  components: {
+    SideBar,
+    cmpBody,
+    cmpPaging
+  },
   data () {
     return {
-      navOptions: [
-        {
-          name: 'HTML',
-          path: '/homePage/htmlPage'
-        },
-        {
-          name: 'CSS',
-          path: '/homePage/cssPage'
-        },
-        {
-          name: 'JavaScript',
-          path: '/homePage/javaScriptPage'
-        },
-        {
-          name: 'ECMAScript6',
-          path: '/homePage/ECMAScriptPage'
-        },
-        {
-          name: 'Vue',
-          path: '/homePage/vuePage'
-        },
-        {
-          name: 'React',
-          path: '/homePage/reactPage'
-        }
-      ]
+      navOptions: ['HTML', 'CSS', 'JavaScript', 'ECMAScript6', 'Vue', 'React'],
+      date: undefined,
+      sideBarOptions: sideBarOptions,
+      show: true,
+      // 分页相关
+      currentPage: 1,
+      pageSize: 10
     }
+  },
+  computed: {
+    pageIndex: function () {
+      return this.$route.params.pageIndex
+    },
+    // userInfo: function () {
+    //   return this.$store.state.userInfo
+    // },
+    ...mapState([
+      'userInfo'
+    ])
+  },
+  created () {
+    const _this = this
+    setInterval(function () {
+      _this.date = getDate()
+    }, 1000)
+    this.$store.commit('SET_USERINFO', {
+      name: 'test',
+      role: 'admin'
+    })
   }
 }
 </script>
@@ -72,7 +99,28 @@ export default {
     }
     .homePage-main {
       height: 100%;
+      display: flex;
       box-sizing: border-box;
+      .homePage-main-view {
+        height: 100%;
+        width: 100%;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        & > header {
+          height: 40px;
+          font-size: 0.875rem;
+          line-height: 40px;
+          border-bottom: 1px solid #dddddd;
+          box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+        }
+        .homePage-main-view-body {
+          height: 100%;
+          width: 100%;
+          display: flex;
+          flex-direction: column;
+        }
+      }
     }
   }
 </style>

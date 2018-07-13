@@ -1,7 +1,8 @@
 <template>
   <aside class="cmp-sidebar" v-if="show">
     <ul>
-      <router-link v-for="item in options" :key="item.name" active-class="activeClass" :to="item.path" tag='li'>
+      <router-link v-for="item in options" :key="item.name" :class="{ activeClass: sidebarKey=== item.key }"
+        :to="{ path: $route.path, query: { sidebarKey: item.key }}" tag='li'>
         <a>{{item.name}}</a>
       </router-link>
     </ul>
@@ -18,6 +19,11 @@ export default {
     },
     show: {
       type: Boolean
+    }
+  },
+  computed: {
+    sidebarKey: function () {
+      return this.$route.query.sidebarKey
     }
   }
 }
