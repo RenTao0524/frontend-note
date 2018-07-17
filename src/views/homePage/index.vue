@@ -12,7 +12,7 @@
       <section class="homePage-main-view">
         <header>
           <button @click="show = !show">close</button>
-          <span>当前所在位置：</span>
+          <span title="ssss">当前所在位置：</span>
         </header>
         <section class="homePage-main-view-body">
           <cmp-body/>
@@ -27,18 +27,37 @@
 import SideBar from '@/components/SideBar'
 import cmpBody from '@/components/cmpBody'
 import cmpPaging from '@/components/cmpPaging'
-import { getDate } from '@/utils/getDate'
+// import { getDate } from '@/utils/getDate'
 import { sideBarOptions } from '@/utils/sideBarOptions'
-import { mapState } from 'vuex'
+import { mapState, mapGetters } from 'vuex'
 export default {
   name: 'homePage',
+  mixins: [{
+    data () {
+      return {
+        my_option: 1
+      }
+    }
+  }],
   components: {
     SideBar,
     cmpBody,
     cmpPaging
   },
+  // props: ['pageIndex'],
+  props: {
+    pageIndex: {
+      type: String,
+      required: true
+    },
+    sidebarKey: {
+      type: String
+      // required: true
+    }
+  },
   data () {
     return {
+      // my_option: 1,
       navOptions: ['HTML', 'CSS', 'JavaScript', 'ECMAScript6', 'Vue', 'React'],
       date: undefined,
       sideBarOptions: sideBarOptions,
@@ -49,25 +68,62 @@ export default {
     }
   },
   computed: {
-    pageIndex: function () {
-      return this.$route.params.pageIndex
-    },
+    // pageIndex: function () {
+    //   return this.$route.params.pageIndex
+    // },
     // userInfo: function () {
     //   return this.$store.state.userInfo
     // },
     ...mapState([
       'userInfo'
+    ]),
+    ...mapGetters([
+      'name',
+      'getNumber'
     ])
+  },
+  // watch: {
+  //   '$route' (to, from) {
+  //     console.log(to)
+  //     console.log(from)
+  //   }
+  // },
+  beforeEach (to, from, next) {
+    console.log('beforeEach')
+    next()
+  },
+  beforeRouterEnter (to, from, next) {
+    next(vm => {
+      console.log('beforeRouterEnter')
+    })
+  },
+  beforeRouteUpdate (to, from, next) {
+    console.log(to)
+    // console.log(from)
+    console.log('beforeRouteUpdate')
+    next()
+  },
+  beforeCreate () {
+    console.log(this)
+    console.log('beforeCreate')
   },
   created () {
     const _this = this
     setInterval(function () {
-      _this.date = getDate()
+      _this.date = new Date().toLocaleString()
     }, 1000)
     this.$store.commit('SET_USERINFO', {
       name: 'test',
       role: 'admin'
     })
+    this.$store.dispatch('set_userInfo', {
+      name: 'test',
+      role: 'test'
+    }).then(res => {
+      // console.log(res)
+    })
+    this.$store.dispatch('setNumber')
+    // console.log(window.history)
   }
 }
 </script>

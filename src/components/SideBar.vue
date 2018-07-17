@@ -37,6 +37,7 @@ export default {
     display: inline-block;
     background-color: #F5F5F5;
     ul {
+      width: 150px;
       margin: 0;
       padding: 0;
       li {
